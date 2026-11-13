@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HDFC Bank - Loan Approval Prediction System</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header Banner -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="logo-box">HDFC</div>
+        <div class="brand-text">
+          <h1>HDFC Bank Loan Predictor</h1>
+          <p>Predicting Loan Approval with Machine Learning</p>
+        </div>
+      </div>
+      <div class="nav-badges">
+        <span class="badge ai-badge">ML Model Accuracy: 97.9%</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <!-- Hero / Intro -->
+    <section class="intro-section">
+      <h2>Check Loan Approval</h2>
+      <p>Enter the applicant's details below to see if the loan is likely to be approved or rejected based on machine learning patterns.</p>
+      
+      <!-- Preset Buttons for Quick Testing -->
+      <div class="presets-container">
+        <span class="preset-label">Try Sample Profiles:</span>
+        <button type="button" class="preset-btn" onclick="applyPreset('prime')">🟢 Good Profile (Approved)</button>
+        <button type="button" class="preset-btn" onclick="applyPreset('subprime')">🔴 Risky Profile (Rejected)</button>
+        <button type="button" class="preset-btn" onclick="applyPreset('self_employed')">🟡 Self-Employed (Approved)</button>
+      </div>
+    </section>
+
+    <!-- App Grid: Form on Left, Results on Right -->
+    <div class="grid-layout">
+      <!-- Input Form Card -->
+      <div class="card form-card">
+        <div class="card-header">
+          <h3>Applicant Information</h3>
+          <span class="step-indicator">Fill Details</span>
+        </div>
+
+        <form id="loanForm" onsubmit="handleFormSubmit(event)">
+          <!-- Section 1: Personal & Employment -->
+          <div class="form-section">
+            <h4 class="section-title">1. Personal Details</h4>
+            <div class="input-grid">
+              <div class="form-group">
+                <label for="dependents">Number of Dependents</label>
+                <select id="dependents" required>
+                  <option value="0">0 Dependents</option>
+                  <option value="1">1 Dependent</option>
+                  <option value="2" selected>2 Dependents</option>
+                  <option value="3">3 Dependents</option>
+                  <option value="4">4 Dependents</option>
+                  <option value="5">5+ Dependents</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="education">Education</label>
+                <select id="education" required>
+                  <option value="1" selected>Graduate</option>
+                  <option value="0">Not Graduate</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="selfEmployed">Job Type</label>
+                <select id="selfEmployed" required>
+                  <option value="0" selected>Salaried (Job)</option>
+                  <option value="1">Self-Employed (Business)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Loan & Income -->
+          <div class="form-section">
+            <h4 class="section-title">2. Income & Loan Amount</h4>
+            <div class="input-grid">
+              <div class="form-group">
+                <label for="income">Annual Income (₹)</label>
+                <input type="number" id="income" value="7500000" min="100000" step="50000" required>
+                <span class="formatted-hint" id="incomeFormatted">₹75,00,000 (75 Lakhs)</span>
+              </div>
+
+              <div class="form-group">
+                <label for="loanAmount">Loan Amount Needed (₹)</label>
+                <input type="number" id="loanAmount" value="15000000" min="100000" step="50000" required>
+                <span class="formatted-hint" id="loanAmountFormatted">₹1,50,00,000 (1.50 Cr)</span>
+              </div>
+
+              <div class="form-group">
+                <label for="loanTerm">Loan Tenure (Years)</label>
+                <select id="loanTerm" required>
+                  <option value="2">2 Years</option>
+                  <option value="4">4 Years</option>
+                  <option value="6">6 Years</option>
+                  <option value="8">8 Years</option>
+                  <option value="10" selected>10 Years</option>
+                  <option value="12">12 Years</option>
+                  <option value="15">15 Years</option>
+                  <option value="20">20 Years</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: Credit History (CIBIL Score) -->
+          <div class="form-section">
+            <h4 class="section-title">3. Credit Score (CIBIL)</h4>
+            <div class="cibil-slider-container">
+              <div class="cibil-header">
+                <span>CIBIL Score: <strong id="cibilDisplay" class="cibil-value">780</strong></span>
+                <span id="cibilBadge" class="cibil-badge badge-excellent">Great Score</span>
+              </div>
+              <input type="range" id="cibilScore" min="300" max="900" value="780" step="5" oninput="updateCibilSlider()">
+              <div class="cibil-range-labels">
+                <span>300 (Low)</span>
+                <span>550 (Average)</span>
+                <span>650 (Good)</span>
+                <span>900 (High)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 4: Declared Assets -->
+          <div class="form-section">
+            <h4 class="section-title">4. Assets Owned (House, Property, Savings)</h4>
+            <div class="input-grid">
+              <div class="form-group">
+                <label for="residentialAssets">Home / Residential Property (₹)</label>
+                <input type="number" id="residentialAssets" value="8000000" min="0" step="50000" required>
+                <span class="formatted-hint" id="resFormatted">₹80,00,000</span>
+              </div>
+
+              <div class="form-group">
+                <label for="commercialAssets">Commercial Property / Shop (₹)</label>
+                <input type="number" id="commercialAssets" value="3000000" min="0" step="50000" required>
+                <span class="formatted-hint" id="commFormatted">₹30,00,000</span>
+              </div>
+
+              <div class="form-group">
+                <label for="luxuryAssets">Vehicles / Gold / Other Assets (₹)</label>
+                <input type="number" id="luxuryAssets" value="12000000" min="0" step="50000" required>
+                <span class="formatted-hint" id="luxFormatted">₹1,20,00,000</span>
+              </div>
+
+              <div class="form-group">
+                <label for="bankAssets">Savings in Bank Accounts (₹)</label>
+                <input type="number" id="bankAssets" value="5000000" min="0" step="50000" required>
+                <span class="formatted-hint" id="bankFormatted">₹50,00,000</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="submit-btn" id="predictBtn">
+              <span class="btn-text">Check Loan Status</span>
+              <span class="btn-icon">➔</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Result Card -->
+      <div class="card result-card" id="resultCard">
+        <div class="card-header">
+          <h3>Prediction Result</h3>
+          <span class="status-badge" id="decisionPill">Ready</span>
+        </div>
+
+        <div class="result-body" id="resultBody">
+          <!-- Initial Prompt -->
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon">📊</div>
+            <h4>Ready to Predict</h4>
+          </div>
+
+          <!-- Active Decision Container -->
+          <div class="decision-content" id="decisionContent" style="display: none;">
+            <div class="decision-hero" id="decisionHero">
+              <div class="decision-icon" id="decisionIcon">✓</div>
+              <h2 id="decisionTitle">LOAN APPROVED</h2>
+            </div>
+
+            <!-- Probability Meter -->
+            <div class="meter-box">
+              <div class="meter-labels">
+                <span>Confidence Level</span>
+                <strong id="probText">98.5%</strong>
+              </div>
+              <div class="meter-bar">
+                <div class="meter-fill" id="meterFill" style="width: 98.5%;"></div>
+              </div>
+            </div>
+
+            <!-- Key Ratios Grid -->
+            <div class="ratios-grid">
+              <div class="ratio-item">
+                <span class="ratio-label">Total Assets vs Loan</span>
+                <strong class="ratio-value" id="coverageValue">1.87x</strong>
+                <span class="ratio-sub">Total Assets / Loan</span>
+              </div>
+              <div class="ratio-item">
+                <span class="ratio-label">Loan vs Income</span>
+                <strong class="ratio-value" id="ltiValue">2.00x</strong>
+                <span class="ratio-sub">Loan / Annual Salary</span>
+              </div>
+              <div class="ratio-item">
+                <span class="ratio-label">Estimated Monthly EMI</span>
+                <strong class="ratio-value" id="emiValue">₹1,86,000</strong>
+                <span class="ratio-sub">Approx. per month</span>
+              </div>
+            </div>
+
+            <!-- Simple Reasons -->
+            <div class="analysis-section">
+              <h4>Why?</h4>
+              <ul class="factors-list" id="factorsList">
+                <!-- Dynamically populated in simple student-friendly words -->
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Simple Info Section -->
+    <section class="info-section">
+      <div class="info-card">
+        <h4>About this Project</h4>
+        <p>This machine learning model was trained on <strong>4,269 loan applications</strong>. By analyzing credit scores, income, requested loan amounts, and declared assets, the model predicts loan approval with <strong>97.9% accuracy</strong>. CIBIL score is the most influential factor, followed by total assets.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
